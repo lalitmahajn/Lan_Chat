@@ -1,0 +1,1 @@
+"""Server package — route handlers."""
