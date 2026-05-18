@@ -306,3 +306,6 @@ class MainWindow(QMainWindow):
         self.tray.hide()
         api_client.close()
         event.accept()
+        from PySide6.QtWidgets import QApplication
+        QApplication.quit()
+
