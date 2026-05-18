@@ -27,16 +27,22 @@ def is_first_run() -> bool:
 
 def start_uvicorn(port: int):
     """Start FastAPI server in background thread."""
-    app = create_app()
-    config = uvicorn.Config(
-        app,
-        host="0.0.0.0",
-        port=port,
-        log_level="info",
-        access_log=False,
-    )
-    server = uvicorn.Server(config)
-    server.run()
+    try:
+        import asyncio
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        app = create_app()
+        config = uvicorn.Config(
+            app,
+            host="0.0.0.0",
+            port=port,
+            log_level="info",
+            access_log=False,
+        )
+        server = uvicorn.Server(config)
+        server.run()
+    except Exception as e:
+        logger.error(f"FATAL SERVER CRASH: {e}", exc_info=True)
 
 
 def main():
@@ -70,6 +76,11 @@ def main():
             sys.exit(0)
         port = server_config.server_port
 
+    # Show dashboard first so Qt log handler captures startup & errors
+    window = ServerWindow()
+    window.stop_requested.connect(app.quit)
+    window.show()
+
     # Start Uvicorn in daemon thread
     server_thread = threading.Thread(
         target=start_uvicorn,
@@ -78,11 +89,6 @@ def main():
     )
     server_thread.start()
     logger.info(f"Server starting on port {port}...")
-
-    # Show dashboard
-    window = ServerWindow()
-    window.stop_requested.connect(app.quit)
-    window.show()
 
     sys.exit(app.exec())
 
