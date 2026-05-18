@@ -86,7 +86,11 @@ class WSClient(QThread):
 
     def stop(self):
         self._running = False
-        if self._ws and self._loop:
-            asyncio.run_coroutine_threadsafe(self._ws.close(), self._loop)
+        if self._ws and self._loop and self._loop.is_running():
+            try:
+                asyncio.run_coroutine_threadsafe(self._ws.close(), self._loop)
+                self._loop.call_soon_threadsafe(self._loop.stop)
+            except Exception:
+                pass
         self.quit()
-        self.wait(3000)
+
