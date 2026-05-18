@@ -60,6 +60,22 @@ class ServerWindow(QMainWindow):
 
         header.addStretch()
 
+        self.reset_btn = QPushButton("🗑️ Clean Database & Config")
+        self.reset_btn.setFixedHeight(36)
+        self.reset_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f97316;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 6px 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #ea580c; }
+        """)
+        self.reset_btn.clicked.connect(self._on_reset)
+        header.addWidget(self.reset_btn)
+
         self.stop_btn = QPushButton("Stop Server")
         self.stop_btn.setFixedHeight(36)
         self.stop_btn.setStyleSheet("""
@@ -205,6 +221,27 @@ class ServerWindow(QMainWindow):
     def _on_stop(self):
         self.stop_requested.emit()
         self.close()
+
+    def _on_reset(self):
+        from PySide6.QtWidgets import QMessageBox
+        reply = QMessageBox.question(
+            self,
+            "Clean Database & Config",
+            "⚠️ WARNING: This will permanently delete the server database, user uploaded files, and all configuration settings.\n\nThe server will shut down immediately.\n\nAre you sure you want to proceed?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            import shutil, os
+            from server.config import get_data_dir
+            try:
+                from server.database import _engine
+                if _engine and _engine.sync_engine:
+                    _engine.sync_engine.dispose()
+            except Exception:
+                pass
+            shutil.rmtree(get_data_dir(), ignore_errors=True)
+            os._exit(0)
 
     def closeEvent(self, event):
         self.stop_requested.emit()

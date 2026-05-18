@@ -15,6 +15,7 @@ class Sidebar(QWidget):
     dm_selected = Signal(int, str)
     settings_clicked = Signal()
     admin_clicked = Signal()
+    logout_clicked = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,8 +51,16 @@ class Sidebar(QWidget):
         settings_btn = QPushButton("")
         settings_btn.setIcon(qta.icon('fa5s.cog', color=c['text_primary']))
         settings_btn.setFixedSize(32, 32)
+        settings_btn.setToolTip("Settings")
         settings_btn.clicked.connect(self.settings_clicked.emit)
         btn_row.addWidget(settings_btn)
+
+        logout_btn = QPushButton("")
+        logout_btn.setIcon(qta.icon('fa5s.sign-out-alt', color=c['text_primary']))
+        logout_btn.setFixedSize(32, 32)
+        logout_btn.setToolTip("Log Out")
+        logout_btn.clicked.connect(self.logout_clicked.emit)
+        btn_row.addWidget(logout_btn)
         
         layout.addLayout(btn_row)
 

@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         self.sidebar.dm_selected.connect(self._on_dm_selected)
         self.sidebar.admin_clicked.connect(self._show_admin)
         self.sidebar.settings_clicked.connect(self._show_settings)
+        self.sidebar.logout_clicked.connect(self._on_logout)
         is_admin = client_config.user_role == Role.SUPER_ADMIN
         self.sidebar.show_admin_button(is_admin)
 
@@ -300,6 +301,22 @@ class MainWindow(QMainWindow):
         client_config.theme = next_theme
         client_config.save()
         QMessageBox.information(self, "Theme", f"Theme set to: {next_theme}\nRestart app to apply.")
+
+    def _on_logout(self):
+        reply = QMessageBox.question(
+            self,
+            "Log Out",
+            "Are you sure you want to log out of LAN Chat?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            client_config.clear_auth()
+            self.ws.stop()
+            self.tray.hide()
+            api_client.close()
+            from PySide6.QtWidgets import QApplication
+            QApplication.quit()
 
     def closeEvent(self, event):
         self.ws.stop()
