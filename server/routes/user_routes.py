@@ -52,6 +52,7 @@ async def get_department_members(
             username=user.username,
             display_name=user.display_name,
             presence=user.presence,
+            role=role,
         )
         for user, role in members
     ]

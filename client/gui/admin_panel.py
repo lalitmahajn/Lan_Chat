@@ -45,7 +45,8 @@ class DeptMembersDialog(QDialog):
             members = api_client.get_department_members(self.dept["id"])
             member_ids = set()
             for m in members:
-                item = QListWidgetItem(f"{m['display_name']} (@{m['username']}) - {m['role']}")
+                role_str = m.get('role', 'member')
+                item = QListWidgetItem(f"{m['display_name']} (@{m['username']}) - {role_str}")
                 item.setData(Qt.ItemDataRole.UserRole, m)
                 self.list.addItem(item)
                 member_ids.add(m["id"])

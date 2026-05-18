@@ -49,6 +49,7 @@ class UserBrief(BaseModel):
     username: str
     display_name: str
     presence: str = "offline"
+    role: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
