@@ -15,7 +15,9 @@ Designed for corporate and local network environments where external internet co
 - **🎨 Catppuccin Theming:** Premium Dark & Light UI palettes featuring FontAwesome 5 iconography (`qtawesome`) and smooth QSS styling.
 - **🔔 System Tray Integration:** Native Windows desktop notifications and background taskbar presence.
 - **🛡️ Embedded Admin Panel:** Complete super-admin dashboard for user approvals, department membership management, and server configuration adjustments.
-- **📦 Zero-Install Standalone EXEs:** Packaged into portable Windows executables (`.exe`) via PyInstaller.
+- **🔴 Server Controls & Data Reset:** Status dashboard with one-click data cleaning (`🗑️ Clean Database & Config`).
+- **👤 Client Controls:** Dynamic unread message badges `(N)`, theme switcher, and instant Log Out capabilities.
+- **📦 Professional Packaging:** Standalone `--onedir` executables wrapped into an all-in-one Inno Setup installer (`LAN_Chat_Setup_v1.0.exe`) with component selection for Client and Server apps.
 
 ---
 
@@ -35,13 +37,22 @@ Designed for corporate and local network environments where external internet co
 
 The server app bundles a **PySide6 Status Dashboard** running on the main Qt thread while hosting the **FastAPI/Uvicorn** ASGI server in a background daemon thread. Clients connect securely over the LAN via JWT authentication.
 
+### Data Storage & Windows Permissions
+To ensure 100% compatibility when installed into standard Windows directories like `C:\Program Files`, all dynamic server and client data is safely isolated in the user's home profile:
+- **Server DB & Uploads:** `C:\Users\<Username>\.lan_chat_server\data\`
+- **Client Cache & Tokens:** `C:\Users\<Username>\.lan_chat_client\cache\`
+
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Python 3.11+ (if running from source)
-- Windows OS (for precompiled `.bat` build scripts)
+### Installation via Setup Wizard (Recommended)
+1. Download or compile the installer: `dist\LAN_Chat_Setup_v1.0.exe`
+2. Run the installer and select which components to install:
+   - **Full Installation:** Installs both Server and Client.
+   - **Server Only:** For dedicated host machines.
+   - **Client Only:** For end-user workstations.
+3. Launch from the Desktop or Start Menu shortcuts.
 
 ### Running from Source
 
@@ -66,23 +77,24 @@ The server app bundles a **PySide6 Status Dashboard** running on the main Qt thr
 
 ---
 
-## 📦 Building Executables
+## 📦 Building Executables & Installer
 
-Portable `.exe` packages can be built instantly using the bundled PyInstaller specifications.
+Portable packages and installers can be compiled instantly using the bundled PyInstaller specifications and Inno Setup script.
 
-### Build Server
-Run `build_server.bat` or execute:
+### 1. Build Standalone Binaries
+Build optimized `--onedir` packages (bypasses Windows `%TEMP%` extraction delays):
 ```bash
 python -m PyInstaller server.spec --clean -y
-```
-Output located at: `dist/LAN_Chat_Server/LAN_Chat_Server.exe`
-
-### Build Client
-Run `build_client.bat` or execute:
-```bash
 python -m PyInstaller client.spec --clean -y
 ```
-Output located at: `dist/LAN_Chat_Client/LAN_Chat_Client.exe`
+Output directories: `dist\LAN_Chat_Server\` and `dist\LAN_Chat_Client\`
+
+### 2. Compile Windows Installer
+Requires [Inno Setup Compiler 6+](https://jrsoftware.org/isinfo.php). Run from command prompt:
+```powershell
+& "C:\Users\Auto\AppData\Local\Programs\Inno Setup 6\ISCC.exe" setup.iss
+```
+Resulting installer: `dist\LAN_Chat_Setup_v1.0.exe`
 
 ---
 
@@ -92,6 +104,7 @@ Output located at: `dist/LAN_Chat_Client/LAN_Chat_Client.exe`
 - **Security:** Python-JOSE (JWT Bearer tokens), Passlib (bcrypt 3.x hashing)
 - **Frontend & GUI:** [PySide6 (Qt6)](https://doc.qt.io/qtforpython-6/), QtAwesome, Markdown-to-HTML parsing
 - **Network Discovery:** Zeroconf (mDNS)
+- **Packaging:** PyInstaller, Inno Setup Compiler
 
 ---
 
