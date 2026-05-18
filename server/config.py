@@ -14,11 +14,10 @@ from common.constants import ConfigKey, Defaults
 def get_data_dir() -> Path:
     """Get server data directory. Creates if missing."""
     if getattr(sys, 'frozen', False):
-        base = Path(sys.executable).parent
+        data_dir = Path.home() / ".lan_chat_server" / "data"
     else:
-        base = Path(__file__).parent.parent
-    data_dir = base / "data"
-    data_dir.mkdir(exist_ok=True)
+        data_dir = Path(__file__).parent.parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
 
