@@ -2,8 +2,22 @@
 
 import logging
 import sys
+import io
 import threading
 from pathlib import Path
+
+
+class NullStream(io.StringIO):
+    def isatty(self):
+        return False
+    def write(self, *args, **kwargs):
+        pass
+
+if sys.stdout is None:
+    sys.stdout = NullStream()
+if sys.stderr is None:
+    sys.stderr = NullStream()
+
 
 import uvicorn
 from PySide6.QtWidgets import QApplication
@@ -38,6 +52,7 @@ def start_uvicorn(port: int):
             port=port,
             log_level="info",
             access_log=False,
+            log_config=None,
         )
         server = uvicorn.Server(config)
         server.run()
